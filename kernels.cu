@@ -859,14 +859,10 @@ void deviceInitInstList(struct Inst *inst, unsigned *count, unsigned ninst, int 
   cudaMalloc((void **)&distanceTarget, sizeof(double) * targetsize);
   cudaMemcpyToSymbol(dist_target, &distanceTarget, sizeof(double *), 0, cudaMemcpyHostToDevice);
   
-  if (nc == 2){
-    cudaMalloc((void **)&distanceMatrix1, sizeof(double) * count[0] * count[1]);
-	cudaMemcpyToSymbol(dist1, &distanceMatrix1, sizeof(double *), 0, cudaMemcpyHostToDevice);
-  }
-  else{
-    cudaMalloc((void **)&distanceMatrix1, sizeof(double) * count[0] * count[3]);
-    cudaMalloc((void **)&distanceMatrix2, sizeof(double) * count[1] * count[2]);
-	cudaMemcpyToSymbol(dist1, &distanceMatrix1, sizeof(double *), 0, cudaMemcpyHostToDevice);
+  cudaMalloc((void **)&distanceMatrix1, sizeof(double) * count[TN] * count[FN]);
+  cudaMemcpyToSymbol(dist1, &distanceMatrix1, sizeof(double *), 0, cudaMemcpyHostToDevice);
+  if (nc == 4){
+    cudaMalloc((void **)&distanceMatrix2, sizeof(double) * count[TP] * count[FP]);
 	cudaMemcpyToSymbol(dist2, &distanceMatrix2, sizeof(double *), 0, cudaMemcpyHostToDevice);
   }
   
@@ -1071,7 +1067,7 @@ void kernelTest(int d, int n, int n_test, int k[], double *result, double mu, do
       cudaThreadSynchronize();
       cudaMemcpyFromSymbol(h_hits, hits, sizeof(int) * 4, 0, cudaMemcpyDeviceToHost);
       cudaMemcpyFromSymbol(&dd[i], acc_knn, sizeof(double), 0, cudaMemcpyDeviceToHost);
-      cout << h_hits[0] + h_hits[1] + h_hits[2] + h_hits[3] << "(" << h_hits[0] << "," << h_hits[1] << "," << h_hits[2] << "," << h_hits[3] << "), ";
+      cout << h_hits[0] + h_hits[1] + h_hits[2] + h_hits[3] << "(" << h_hits[0] << "," << h_hits[1] << "," << h_hits[2] << "," << h_hits[3] << ") ";
     }
   
     double max_acc_train = .0;
@@ -1088,7 +1084,7 @@ void kernelTest(int d, int n, int n_test, int k[], double *result, double mu, do
 	  global_max_iter_train = iter;
 	  global_max_pos_train = max_acc_k_train;
     }
-    cout << endl << "max acc = " << max_acc << " at k = " << max_acc_k_train 
+    cout << endl << "max acc = " << max_acc_train << " at k = " << max_acc_k_train 
     << ". global max = " << global_max_acc_train << " in iter " << global_max_iter_train << " at k = " << global_max_pos_train;
 	
   }
