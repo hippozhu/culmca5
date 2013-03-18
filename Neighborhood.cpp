@@ -8,12 +8,15 @@ Neighborhood::Neighborhood(SVMData& train, SVMData& test, int nc, int kk[]):sd(&
   nn[1] = kk[1];
   nn[2] = kk[2];
   nn[3] = kk[3];
+  //cout << "here0" << endl;
   findTarget();
   cout << "target found" << endl;
+  /*
   deviceInitTarget(target, train.ninst, target_size, &nclass, nn, target_offset);
   deviceInitLabelTrain(train.inst, train.ninst);
   deviceInitLabelTest(test.inst, test.ninst);
   deviceInitInstList(train.inst, train.typecount, train.ninst, nclass, target_size);
+  */
 }
 
 Neighborhood::~Neighborhood(){
@@ -100,7 +103,8 @@ void Neighborhood::findTarget(){
   
     target_offset[i] = base;
 	base += nn[sd->inst[i].label];
-	
+	/*
+	*/
     vector<DistPair> dp;
 	for(int j = 0; j < ninst; ++ j){
 	  if(i==j)

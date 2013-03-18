@@ -9,7 +9,9 @@ KernelNeighborhood::KernelNeighborhood(SVMData& train, SVMData& test, int nc, in
   generateTestKernelMatrix();
   initE();
   initTriplets();
+  /*
   deviceInitKernelMatrix(&train.ninst, &test.ninst, &train.nfeat, train.data_col, test.data_col);
+  */
 }
 
 void KernelNeighborhood::generateKernelMatrix(){

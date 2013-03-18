@@ -6,6 +6,8 @@ class Solver{
 	
 	KernelNeighborhood *nb;
     MatrixXd O;
+	double *o;
+	double *tt;
 	MatrixXd t_target;
 	MatrixXd t_triplet;
 	MatrixXd G;

@@ -8,18 +8,20 @@
 Solver::Solver(KernelNeighborhood &neighborhood, double m, double a, double n[]):nb(&neighborhood), alpha(a), mu(m) {
   nu[0] = n[0];nu[1] = n[1];nu[2] = n[2];nu[3] = n[3];
   initO();
-  deviceInitMu(mu, nu);
-  double *o = new double[(*nb).nfeat * (*nb).ninst];
+  //deviceInitMu(mu, nu);
+  o = new double[(*nb).nfeat * (*nb).ninst];
   matrixToDouble(o, O);
-  deviceInitO(o, O.size());
+  //deviceInitO(o, O.size());
   computeTargetTerm();
-  double *tt = new double[(*nb).ninst * (*nb).ninst];
+  tt = new double[(*nb).ninst * (*nb).ninst];
   matrixToDouble(tt, t_target);
+  /*
   deviceInitTargetTerm(tt, t_target.size());
   
   deviceInitUpdateTerm((*nb).ninst * (*nb).ninst, (*nb).nfeat * (*nb).ninst);
   
   deviceInitTri((*nb).ninst * (*nb).ninst);
+  */
 }
 
 

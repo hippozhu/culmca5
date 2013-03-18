@@ -4,11 +4,13 @@
 SVMData::SVMData(string datafile){
   nfeat = getNFeat(datafile.c_str());
   ninst = getLineNo(datafile.c_str());
+  inst = new Inst[ninst];
+  label = new short[ninst];
   data = new double[nfeat*ninst];
   data_col = new double[nfeat*ninst];
-  inst = new Inst[ninst];
   readData(datafile.c_str(), false, data);
   readData(datafile.c_str(), true, data_col);
+  nclass = getNClass();
 }
 
 SVMData::~SVMData(){
@@ -53,6 +55,11 @@ int SVMData::getNFeat(const char* filename){
   return nf;
 }
 
+int SVMData::getNClass(){
+  set<short> second (label, label + ninst);
+  return second.size();
+}
+
 void SVMData::readData(const char* filename, bool columnwise, double *d){
 
   if (!columnwise){
@@ -75,9 +82,9 @@ void SVMData::readData(const char* filename, bool columnwise, double *d){
 	  
 	  if(!columnwise){
         inst[lineno].ino = lineno;
-        //inst[lineno].status = 0;
         inst[lineno].label = stringToInt(line.substr(0, pspace));
 	    ++ typecount[inst[lineno].label];
+		label[lineno] = inst[lineno].label;
 	  }
 
       istringstream iss(line.substr(pspace+1));
@@ -126,4 +133,39 @@ double SVMData::stringToFloat(string s){
   stringstream ss(s);
   ss >> result;
   return result;
+}
+
+void SVMData::calcEdistMatrix(double *distMatrix, int *ino){
+  for(int i = 0; i < ninst; i++)
+    for(int j = 0; j < ninst; j++){
+	  double d = DBL_MAX;
+	  if (i != j && label[i] == label[j])
+	      d = edist(i, j);
+      distMatrix[i * ninst + j] = d;
+	  ino[i * ninst + j] = j;
+	}
+}
+
+double SVMData::edist(int i, int j){
+  double *p1 = data + i * nfeat;
+  double *p2 = data + j * nfeat;
+  double dist = 0.0;
+  for (int l = 0; l < nfeat; l++)
+    dist += pow(p1[l]-p2[l], 2);
+  return dist;
+}
+
+void SVMData::getTargetOffset(int *target_offset, int k[]){
+  int base = 0;
+  for(int i = 0; i < ninst; ++ i){  
+    target_offset[i] = base;
+	base += k[label[i]];
+  }
+}
+
+int SVMData::getTargetSize(int k[]){
+  int targetsize = 0;
+  for(int i = 0; i < 4; ++ i)
+    targetsize += typecount[i] * k[i];
+  return targetsize;
 }
