@@ -1174,7 +1174,8 @@ void kernelTest(){
   
   
   // update target and target term periodically
-  if (targetUpdateNeeded()){
+  //if (targetUpdateNeeded()){
+  if (false){
     knnUpdateDist_fortargetupdate<<<84, BSIZE>>>();
     knnFindNeighbor_train<<<n_train, BSIZE>>>();
     updateTarget<<<84, BSIZE>>>();
